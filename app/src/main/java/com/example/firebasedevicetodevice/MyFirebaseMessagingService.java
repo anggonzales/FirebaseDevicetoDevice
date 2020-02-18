@@ -12,6 +12,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
@@ -29,6 +30,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         final Intent intent = new Intent(this, MainActivity.class);
+        if (remoteMessage.getData() != null) {
+            String mensaje = remoteMessage.getData().get("message");
+            Log.i("mesa", mensaje);
+            intent.putExtra("descuento", mensaje);
+            startActivity(intent);
+        }
+        //intent.putExtra("descuento", mensaje);
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         int notificationID = new Random().nextInt(3000);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -49,6 +57,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setAutoCancel(true)
                 .setSound(notificationSoundUri)
                 .setContentIntent(pendingIntent);
+
+
         notificationManager.notify(notificationID, notificationBuilder.build());
     }
 
@@ -77,5 +87,4 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d("newToken_ID", token);
         FirebaseMessaging.getInstance().subscribeToTopic(SUBSCRIBE_TO);
     }
-
 }
